@@ -16,13 +16,13 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   bool isActive = false;
-  late OpenVPN engine;
+  late OpenVPN openvpn;
   VpnStatus? status;
   VPNStage? stage;
   bool _granted = false;
 
   void initState() {
-    engine = OpenVPN(
+    openvpn = OpenVPN(
       onVpnStatusChanged: (data) {
         setState(() {
           status = data;
@@ -35,11 +35,10 @@ class _HomeScreenState extends State<HomeScreen> {
       },
     );
 
-    engine.initialize(
-      groupIdentifier: "group.com.laskarmedia.vpn",
-      providerBundleIdentifier:
-          "id.laskarmedia.openvpnFlutterExample.VPNExtension",
-      localizedDescription: "VPN by Nizwar",
+    openvpn.initialize(
+      groupIdentifier: "group.com.marist.vpn",
+      providerBundleIdentifier: "id.marist.openvpnFlutterExample.VPNExtension",
+      localizedDescription: "MaristVPN",
       lastStage: (stage) {
         setState(() {
           this.stage = stage;
@@ -55,7 +54,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> initPlatformState() async {
-    engine.connect(config, "KOREA",
+    openvpn.connect(config, "KOREA",
         username: defaultVpnUsername,
         password: defaultVpnPassword,
         certIsRequired: true);
@@ -63,7 +62,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void disconnect() {
-    engine.disconnect();
+    openvpn.disconnect();
   }
 
   @override
@@ -138,7 +137,6 @@ class _HomeScreenState extends State<HomeScreen> {
                         disconnect();
                       }
                     },
-                    
                   );
                 }),
                 child: Material(
@@ -152,9 +150,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     child: Container(
                       height: 150,
-                      width:150,
+                      width: 150,
                       decoration: const BoxDecoration(
-                        color:kWhiteClr,
+                        color: kWhiteClr,
                         shape: BoxShape.circle,
                       ),
                       child: Column(
@@ -172,23 +170,18 @@ class _HomeScreenState extends State<HomeScreen> {
                             isActive == true ? "STOP" : "START",
                             style: TextStyle(
                               color:
-                              isActive == true ? Colors.red : Colors.green,
+                                  isActive == true ? Colors.red : Colors.green,
                               fontSize: 23,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-             
-                          
                         ],
                       ),
-                      
-                          
                     ),
                   ),
                 ),
               ),
             ),
-              
 
             SizedBox(
               height: _size.height * 0.11,
@@ -198,7 +191,9 @@ class _HomeScreenState extends State<HomeScreen> {
               padding: const EdgeInsets.symmetric(vertical: 10),
               width: double.infinity,
               decoration: BoxDecoration(
-                  color: isActive == true? kPrimaryClr: kPrimaryClr.withOpacity(0.2),
+                  color: isActive == true
+                      ? kPrimaryClr
+                      : kPrimaryClr.withOpacity(0.2),
                   borderRadius: BorderRadius.circular(10)),
               child: Center(
                 child: Text(
@@ -208,27 +203,20 @@ class _HomeScreenState extends State<HomeScreen> {
                       fontWeight: FontWeight.w500,
                       color: secndryColor),
                 ),
-                 
               ),
-      
             ),
-            
-            
-            
-            
-            if (Platform.isAndroid)
-                TextButton(
-                  child: Text(_granted ? "Granted" : "Request Permission"),
-                  onPressed: () {
-                    engine.requestPermissionAndroid().then((value) {
-                      setState(() {
-                        _granted = value;
-                      });
-                    });
-                  },
-                ),
-          
 
+            if (Platform.isAndroid)
+              TextButton(
+                child: Text(_granted ? "Granted" : "Request Permission"),
+                onPressed: () {
+                  openvpn.requestPermissionAndroid().then((value) {
+                    setState(() {
+                      _granted = value;
+                    });
+                  });
+                },
+              ),
           ],
         ),
       ),
