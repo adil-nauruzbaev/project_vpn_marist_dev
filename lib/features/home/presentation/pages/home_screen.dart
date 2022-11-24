@@ -1,8 +1,8 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/container.dart';
-import 'package:flutter/src/widgets/framework.dart';
+import 'package:internet_speed/callbacks_enum.dart';
+import 'package:internet_speed/internet_speed.dart';
 import 'package:openvpn_flutter/openvpn_flutter.dart';
 import 'package:project_vpn_marist_dev/common/app_colors.dart';
 import 'package:project_vpn_marist_dev/common/constants/constants.dart';
@@ -20,7 +20,14 @@ class _HomeScreenState extends State<HomeScreen> {
   VpnStatus? status;
   VPNStage? stage;
   bool _granted = false;
+  InternetSpeed internetSpeed = InternetSpeed();
+  double downloadRate = 0;
+  double uploadRate = 0;
+  double downloadProgress = 0;
+  double uploadProgress = 0;
+  String unitText = 'Mb/s';
 
+  @override
   void initState() {
     openvpn = OpenVPN(
       onVpnStatusChanged: (data) {
@@ -67,7 +74,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    Size _size = MediaQuery.of(context).size;
+    Size size = MediaQuery.of(context).size;
     return Scaffold(
       backgroundColor: bgColor,
       appBar: AppBar(
@@ -86,33 +93,15 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       drawer: Drawer(
         child: Column(
-          children: [
-            const DrawerHeader(
+          children: const [
+            DrawerHeader(
               child: Text(
-                'Marist',
+                'Marist VPN',
                 style: TextStyle(
                     color: kPrimaryClr,
                     fontSize: 25,
                     fontStyle: FontStyle.italic,
                     fontWeight: FontWeight.bold),
-              ),
-            ),
-            ListTile(
-              onTap: () {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => Container()));
-              },
-              leading: const Icon(
-                Icons.translate,
-                color: Colors.black,
-              ),
-              title: const Text(
-                "Select Language",
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
-              trailing: const Icon(
-                Icons.arrow_forward_ios_sharp,
-                size: 12,
               ),
             ),
           ],
@@ -123,7 +112,7 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(
           children: [
             SizedBox(
-              height: _size.height * 0.11,
+              height: size.height * 0.11,
             ),
             Center(
               child: InkWell(
@@ -137,6 +126,31 @@ class _HomeScreenState extends State<HomeScreen> {
                         disconnect();
                       }
                     },
+                  );
+                  internetSpeed.startDownloadTesting(
+                    onDone: (double transferRate, SpeedUnit unit) {
+                      debugPrint('the transfer rate $transferRate');
+                      setState(() {
+                        downloadRate = transferRate;
+                        unitText = unit == SpeedUnit.Kbps ? 'Kb/s' : 'Mb/s';
+                        downloadProgress = 10000000;
+                      });
+                    },
+                    onProgress:
+                        (double percent, double transferRate, SpeedUnit unit) {
+                      debugPrint('the transfer rate $transferRate');
+                      setState(() {
+                        downloadRate = transferRate;
+                        unitText = unit == SpeedUnit.Kbps ? 'Kb/s' : 'Mb/s';
+                        downloadProgress = percent.truncateToDouble();
+                      });
+                    },
+                    onError: (String errorMessage, String speedTestError) {
+                      downloadProgress = 0;
+                      debugPrint(
+                          'the errorMessage $errorMessage, the speedTestError $speedTestError');
+                    },
+                    fileSize: 1000000,
                   );
                 }),
                 child: Material(
@@ -182,9 +196,13 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
             ),
+            SizedBox(
+              height: size.height * 0.11,
+            ),
+            Text(' $downloadRate $unitText'),
 
             SizedBox(
-              height: _size.height * 0.11,
+              height: size.height * 0.11,
             ),
             //connection section
             Container(
