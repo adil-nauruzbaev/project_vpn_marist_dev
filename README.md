@@ -13,5 +13,5 @@ The project is a Vpn App.
 
 ## Application video:
 
-https://user-images.githubusercontent.com/106264625/203905509-5fa4c6d5-8563-4373-8940-c59a313381b3.mp4
+https://user-images.githubusercontent.com/106264625/203906849-c077c6d6-cfb2-465d-b0c3-c508165f041a.mp4
 
