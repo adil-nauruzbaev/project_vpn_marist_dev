@@ -218,7 +218,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   isActive == true ? "Connected" : "Not Connected",
                   style: const TextStyle(
                       fontSize: 18,
-                      fontWeight: FontWeight.w200,
+                      fontWeight: FontWeight.w500,
                       color: secndryColor),
                 ),
               ),
