@@ -18,7 +18,7 @@ class _SplashScreenState extends State<SplashScreen> {
     }); 
     return const Scaffold(
       body: Center(
-        child: SpinKitSpinningLines(color: kSpinKitColor, size: 100,),
+        child: SpinKitSpinningLines(color: kSpinKitColor, size: 1000,),
       ),
     );
   }
